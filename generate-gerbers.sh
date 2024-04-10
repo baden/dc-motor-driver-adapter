@@ -27,7 +27,7 @@ rm -rf $DIST/gerbers
 cp board/docs/$NAME.txt $DIST/$NAME.txt
 
 
-# Pos files: Top, Bottom
+# Pos files: Top only
 mkdir -p $DIST/assembly
 kicad-cli pcb export pos \
     --format csv --units mm --side front --output $DIST/assembly/$NAME.top.pos.csv $BOARD
@@ -41,7 +41,7 @@ kicad-cli pcb export pos \
 # kicad-cli pcb export pos \
 #     --units mm --side back --output $DIST/assembly/$NAME.bottom.pos $BOARD
 
-kicad-cli sch export bom --output $DIST/assembly/$NAME.bom.csv board/6000.kicad_sch
+kicad-cli sch export bom --output $DIST/assembly/$NAME.bom.csv board/$NAME.kicad_sch
 # xsltproc -o $DIST/assembly/$NAME.bom.csv \
 #     $DIST/assembly/$NAME.bom.xml
 
@@ -68,17 +68,19 @@ inkscape $DIST/assembly/$NAME-Top.svg \
 
 rm $DIST/assembly/$NAME-Top.svg
 
-kicad-cli pcb export svg --exclude-drawing-sheet --mirror \
-    --layers "Edge.Cuts,B.Fab" --output $DIST/assembly/$NAME-Bottom.svg $BOARD
+# kicad-cli pcb export svg --exclude-drawing-sheet --mirror \
+#     --layers "Edge.Cuts,B.Fab" --output $DIST/assembly/$NAME-Bottom.svg $BOARD
 
-inkscape $DIST/assembly/$NAME-Bottom.svg \
-    --export-area-drawing --batch-process --export-type=pdf \
-    --export-filename=$DIST/assembly/$NAME-Bottom.pdf > /dev/null 2> /dev/null
+# inkscape $DIST/assembly/$NAME-Bottom.svg \
+#     --export-area-drawing --batch-process --export-type=pdf \
+#     --export-filename=$DIST/assembly/$NAME-Bottom.pdf > /dev/null 2> /dev/null
 
 # inkscape $DIST/assembly/$NAME-Bottom.svg \
 #     -w 1024 -D -o $DIST/assembly/$NAME-Bottom.png --export-background-opacity=1.0 > /dev/null 2> /dev/null
 
-rm $DIST/assembly/$NAME-Bottom.svg
+# rm $DIST/assembly/$NAME-Bottom.svg
+
+cp board/docs/$NAME.png $DIST/assembly/$NAME.png
 
 zip -rj $DIST/$NAME-assembly.zip $DIST/assembly/*
 rm -rf $DIST/assembly
@@ -88,7 +90,7 @@ rm -rf $DIST/assembly
 # Check files
 mkdir -p $DIST/check
 
-for L in F.Cu B.Cu In1.Cu In2.Cu
+for L in F.Cu B.Cu
 do
 
 kicad-cli pcb export svg --exclude-drawing-sheet \

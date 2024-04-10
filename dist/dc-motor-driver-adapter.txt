@@ -1,0 +1,38 @@
+Name: dc-motor-driver-adapter
+Revision: 00
+
+Dimension: 21.0mm x 15.0mm
+Thickness: 1.6mm
+Layers: 2
+
+Gerber files:
+
+Copper layers (orger from top to bottom):
+Top copper:         dc-motor-driver-adapter-F_Cu.gtl
+Bottom copper:      dc-motor-driver-adapter-B_Cu.gbl
+
+Top solder mask:    dc-motor-driver-adapter-F_Mask.gts
+Bottom solder mask: dc-motor-driver-adapter-B_Mask.gbs
+Outline:            dc-motor-driver-adapter-Edge_Cuts.gm1
+Top solder paste:   dc-motor-driver-adapter-F_Paste.gtp
+Drill:              dc-motor-driver-adapter.drl
+
+
+Silk: NO
+Color of solder mask: green
+Surface Finish: HASL
+
+Copper weight: 1oz
+
+Material details: FR4-Standard Tg 140C
+
+Recomend panelizing: 4x5 vcut
+
+Components positions: dc-motor-driver-adapter-top.pos
+Components positions (CSV): dc-motor-driver-adapter-top.pos.csv
+Components positions (human pdf): dc-motor-driver-adapter-Top.pdf
+Components positions (human pdf): dc-motor-driver-adapter-Bottom.pdf
+
+Components list: dc-motor-driver-adapter.bom.csv
+
+Assembled board example: dc-motor-driver-adapter.png
