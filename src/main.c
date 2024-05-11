@@ -1,17 +1,35 @@
 #include "gpio.h"
+#include "uart.h"
 
+#define STARTKIT 1
 
-#define PIN_LED    PD0   // pin connected to LED
+#if defined(STARTKIT)
+
+    #define PIN_LED    PD0   // pin connected to LED (Startkit)
+
+#else
+
+    #define PIN_LED    PA2   // pin connected to LED (Adapter)
+#endif
 
 static inline void init(void)
 {
 //   PIN_input_AN(PIN_PAD);
 //   PIN_input_PU(PIN_ACT);
-  PIN_output(PIN_LED);
-  PIN_high(PIN_LED);
+    PIN_output(PIN_LED);
+    PIN_high(PIN_LED);
+
+    #if defined(STARTKIT)
+        PIN_output(PD4);
+        PIN_low(PD4);
+    #endif
+
 //   OLED_init();
 //   ADC_init();
 //   ADC_input(PIN_PAD);
+
+    UART_init();
+
 }
 
 
@@ -29,5 +47,11 @@ int main(void)
         {
             __asm__("nop");
         }
+
+        UART_write('T');
+        UART_write('i');
+        UART_write('c');
+        UART_write('k');
+        UART_write('\n');
     }
 }

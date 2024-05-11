@@ -21,3 +21,9 @@ brew test riscv-tools
 Во, подивиться це:
 
 https://github.com/wagiminator/CH32V003-GameConsole/tree/main
+
+Ще це:
+https://github.com/wagiminator/MCU-Templates
+
+Ще тут купа посилань:
+https://github.com/wagiminator/Development-Boards/tree/main/CH32V003A4M6_DevBoard
