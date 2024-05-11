@@ -1,5 +1,5 @@
 #include "gpio.h"
-#include "uart.h"
+#include "debug_serial.h"
 
 #define STARTKIT 1
 
@@ -28,13 +28,15 @@ static inline void init(void)
 //   ADC_init();
 //   ADC_input(PIN_PAD);
 
-    UART_init();
+    DEBUG_init();
 
 }
 
 
 int main(void)
 {
+    unsigned int counter = 0;
+
     init();
 
 
@@ -48,10 +50,14 @@ int main(void)
             __asm__("nop");
         }
 
-        UART_write('T');
-        UART_write('i');
-        UART_write('c');
-        UART_write('k');
-        UART_write('\n');
+        counter++;
+
+        DEBUG_printf("Tick: %d\n", counter);
+
+        // UART_write('T');
+        // UART_write('i');
+        // UART_write('c');
+        // UART_write('k');
+        // UART_write('\n');
     }
 }
