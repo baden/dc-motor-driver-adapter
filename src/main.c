@@ -12,6 +12,8 @@
     #define PIN_LED    PA2   // pin connected to LED (Adapter)
 #endif
 
+#define EXTI_Line3     ((uint32_t)0x00008) /* External interrupt line 3 */
+
 static inline void init(void)
 {
 //   PIN_input_AN(PIN_PAD);
@@ -29,6 +31,42 @@ static inline void init(void)
 
     PIN_input(PA1); // Вхід для PPM
     PIN_input(PD2); // Вхід для PPM
+    PIN_input(PD3); // Вхід для PPM
+    PIN_input(PD6); // Вхід для PPM
+
+    // Configure PD6 as interrupt input
+    // The "port" is:
+    // 0 for Port A
+    // 1 for Port B
+    // 2 for Port C
+    // 3 for Port D
+    // #define portno 3
+    // #define pin 6
+
+    // // AFIO->EXTICR |= 0x02 << (2 * 6); // PC6
+    // AFIO->EXTICR = portno << (pin * 2);
+    // // EXTI->INTENR |= EXTI_INTENR_MR6;
+    // EXTI->INTENR = 0xffffffff;
+	// // EXTI->FTENR |= EXTI_FTENR_TR6;
+    // // EXTI->RTENR = EXTI_RTENR_TR6;   // Rising edge trigger
+    // EXTI->RTENR = 0xffffffff;   // Rising edge trigger
+
+    // #define RCC_APB2Periph_AFIO              ((uint32_t)0x00000001)
+
+    RCC->APB2PCENR |= RCC_AFIOEN;
+#define AFIO_EXTICR_EXTI3_PD                    ((uint16_t)0x00C0) /* PD[3] pin */
+	// Configure the IO as an interrupt.
+	AFIO->EXTICR = AFIO_EXTICR_EXTI3_PD;
+	EXTI->INTENR = EXTI_INTENR_MR3; // Enable EXT3
+	EXTI->RTENR = EXTI_RTENR_TR3;  // Rising edge trigger
+    EXTI->FTENR = EXTI_FTENR_TR3;  // Falling edge trigger
+
+    // enable pin-change-interrupt.
+    NVIC_EnableIRQ( EXTI7_0_IRQn );
+
+    // Configure PD6 as interrupt input
+    // AFIO->EXTICR = AFIO_EXTICR1_EXTI2_PD;
+    // EXTI->INTMR = EXTI_IMR_MR2;
 
     RCC->APB2PCENR |= RCC_TIM1EN; // enable TIM1 clock
     // RCC->APB2PRSTR = RCC_TIM1RST;
@@ -38,7 +76,7 @@ static inline void init(void)
 	TIM1->ATRLR = 0xffff;
 	TIM1->PSC = 47; // 48MHz/(47+1) -> 1µs resolution
 
-#if 1
+#if 0
     // D2 Capture Input(T1CH1)
     // PA1 - T1CH2
 
@@ -150,6 +188,30 @@ void TIM1_CC_IRQHandler(void)
 }
 
 
+void EXTI7_0_IRQHandler( void ) __attribute__((interrupt));
+void EXTI7_0_IRQHandler( void ) 
+{
+    PIN_high(PC1);
+    asm volatile("nop");
+    PIN_low(PC1);
+    unsigned pin = PIN_read(PD3);
+
+    if(pin != 0) {
+        // Reset Timer1
+        TIM1->CTLR1 = 0;
+        TIM1->CNT = 0;
+        TIM1->CTLR1 = TIM_CEN;
+    } else {
+        TIM1->CTLR1 = 0;
+        last_value = TIM1->CNT;
+    }
+	// endtime = SysTick->CNT;
+	// EXTI->INTFR = 0xffffffff;
+
+    // Acknowledge the interrupt
+	EXTI->INTFR = EXTI_Line3;
+}
+
 int main(void)
 {
     // funPinMode( PC1,  GPIO_CFGLR_OUT_10Mhz_PP );
@@ -173,7 +235,7 @@ int main(void)
 
         counter++;
 
-        DEBUG_printf("Counter: %d  Last value: %d\n", counter, last_value / 1000);
+        DEBUG_printf("Counter: %d  Last value: %d\n", counter, last_value / 10);
 
         // UART_write('T');
         // UART_write('i');
