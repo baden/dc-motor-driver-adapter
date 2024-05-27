@@ -37,7 +37,8 @@ extern "C" {
 // DEBUG parameters
 #define DEBUG_ENABLE      1                 // enable serial DEBUG (0:no, 1:yes)
 #define DEBUG_TX          0                 // UART TX pin mapping (see above)
-#define DEBUG_BAUD        115200            // default UART baud rate
+// #define DEBUG_BAUD        115200            // default UART baud rate
+#define DEBUG_BAUD        19200            // Must be equal as RX baud rate
 
 // DEBUG functions
 #if DEBUG_ENABLE > 0
