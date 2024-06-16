@@ -3,10 +3,10 @@
 # https://github.com/snhobbs/kicad-make/blob/0256edc46bfc10a185658dce7bf5963997f3f1dc/Makefile#L10
 
 NAME=dc-motor-driver-adapter
-DIST=dist
+REVISION=revision-2
+DIST=dist/$REVISION
 
-
-BOARD=board/$NAME.kicad_pcb
+BOARD=board/$REVISION/$NAME.kicad_pcb
 
 mkdir -p $DIST
 rm -rf $DIST/*
@@ -14,7 +14,7 @@ rm -rf $DIST/*
 # Gerbers: Top, Bottom, Paste (top only), Mask, Edge
 mkdir -p $DIST/gerbers
 kicad-cli pcb export gerbers \
-    --subtract-soldermask --no-x2 --layers "F.Cu,B.Cu,Edge.Cuts,F.Paste,F.Mask,B.Mask" \
+    --subtract-soldermask --no-x2 --layers "F.Cu,B.Cu,Edge.Cuts,F.Paste,F.Mask,B.Mask,B.Silkscreen" \
     -o $DIST/gerbers $BOARD
 
 # Drill files: Drill, Drill map
@@ -24,7 +24,7 @@ kicad-cli pcb export drill \
 zip -rj $DIST/$NAME-gerbers.zip $DIST/gerbers/*.[gd]*
 rm -rf $DIST/gerbers
 
-cp board/docs/$NAME.txt $DIST/$NAME.txt
+cp board/$REVISION/docs/$NAME.txt $DIST/$NAME.txt
 
 
 # Pos files: Top only
@@ -41,7 +41,7 @@ kicad-cli pcb export pos \
 # kicad-cli pcb export pos \
 #     --units mm --side back --output $DIST/assembly/$NAME.bottom.pos $BOARD
 
-kicad-cli sch export bom --output $DIST/assembly/$NAME.bom.csv board/$NAME.kicad_sch
+kicad-cli sch export bom --output $DIST/assembly/$NAME.bom.csv board/$REVISION/$NAME.kicad_sch
 # xsltproc -o $DIST/assembly/$NAME.bom.csv \
 #     $DIST/assembly/$NAME.bom.xml
 
