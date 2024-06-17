@@ -28,7 +28,8 @@ extern "C" {
 #include "ch32v003.h"
 
 // I2C Parameters
-#define I2C_CLKRATE   400000    // I2C bus clock rate (Hz)
+// #define I2C_CLKRATE   400000    // I2C bus clock rate (Hz)
+#define I2C_CLKRATE   100000    // I2C bus clock rate (Hz)
 #define I2C_REMAP     0         // I2C pin remapping (see above)
 
 // I2C Functions

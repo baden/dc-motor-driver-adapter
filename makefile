@@ -36,7 +36,7 @@ CLEAN    = rm -f *.lst *.obj *.cof *.list *.map *.eep.hex *.o *.d
 CFLAGS   = $(CPUARCH) -DF_CPU=$(F_CPU) -I$(NEWLIB) -I$(INCLUDE) -I. -L$(INCLUDE)
 CFLAGS  += -g -Os -flto -ffunction-sections -fno-builtin -Wall
 LDFLAGS  = -T$(LDSCRIPT) -nostdlib -lgcc -static-libgcc -Wl,--gc-sections
-CFILES   = $(MAINFILE) src/crsf.c $(wildcard $(INCLUDE)/*.c) $(wildcard $(INCLUDE)/*.S)
+CFILES   = $(MAINFILE) src/crsf.c src/dac.c $(wildcard $(INCLUDE)/*.c) $(wildcard $(INCLUDE)/*.S)
 
 # Symbolic Targets
 help:

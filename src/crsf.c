@@ -54,6 +54,7 @@ typedef enum {
     CRSF_FRAMETYPE_MSP_WRITE = 0x7C, // write with 8 byte chunked binary (OpenTX outbound telemetry buffer limit)
 } crsf_frame_type_e;
 
+#if 0
 // https://px4.github.io/Firmware-Doxygen/d9/dd2/crsf_8cpp_source.html
 static uint8_t crc8_dvb_s2(uint8_t crc, uint8_t a)
 {
@@ -67,7 +68,7 @@ static uint8_t crc8_dvb_s2(uint8_t crc, uint8_t a)
     }
     return crc;
 }
-
+#endif
 
 
 // CRSF protocol state machine
@@ -106,6 +107,9 @@ typedef struct __attribute__((packed)) crsf_frame {
 } crsf_frame_t;
 // #pragma pack(pop)
 
+// 0xAEF8
+// 0b10101110 111 11000
+// 11 bits:
 
 
 volatile int channel[16] = {0};

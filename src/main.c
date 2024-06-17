@@ -1,8 +1,18 @@
+#include <stdbool.h>
 #include "gpio.h"
 #include "debug_serial.h"
 #include "uart_rx.h"
 #include "crsf.h"
-#include <stdbool.h>
+#include "dac.h"
+#include "system.h"
+
+
+// Device modes:
+// 1 - Керування лебідкою по каналу 12
+// 2 - Керування лівим бортом по каналах 1 та 2  (1+2)
+// 3 - Керування правим бортом по каналах 1 та 2 (2-1)
+
+#define DEVICE_MODE 2
 
 //#define STARTKIT 1
 
@@ -29,7 +39,14 @@ static inline void init(void)
     PIN_input_PD(PD6); // Вхід для PPM (UART) (підтягнутий до землі)
     #endif
 
+    // SYS_init();
     UART_init();
+    dac_init();
+    #if DEVICE_MODE == 1
+    dac_write(3000);        // Підібрати напругу 12В
+    #else
+    dac_write(4095);
+    #endif
 
 #if 0
     // Configure PD6 as interrupt input
@@ -101,9 +118,15 @@ void EXTI7_0_IRQHandler( void )
 }
 #endif
 
+#if DEVICE_MODE == 1
+
 static void rxFoo()
 {
     int val = channel[12 -1];
+
+    // Middle = 1044
+    // Low = 191
+    // High = 1792
 
     if(val < 500) {
         #if defined(STARTKIT)
@@ -126,6 +149,68 @@ static void rxFoo()
     }
 }
 
+#define LOW_PASS_FILTER
+
+#elif (DEVICE_MODE == 2) || (DEVICE_MODE == 3) 
+
+static void rxFoo()
+{
+    // bool in_dead_zone = false;
+
+    #ifdef LOW_PASS_FILTER
+    static int last_dac_val = 0;
+    #endif
+
+    // CRSF center value is 992
+    #define CENTER_X 992
+    #define CENTER_Y 992
+    #define MAX_X 820
+    #define MAX_Y 820
+    #define DEAD_ZONE 10
+
+    int X = channel[1 -1] - CENTER_X;   // -MAX_X to MAX_X
+    int Y = channel[2 -1] - CENTER_Y;   // -MAX_Y to MAX_Y
+
+    #if (DEVICE_MODE == 2)
+        int dac_val = (X+Y);
+    #else
+        int dac_val = (Y-X);
+    #endif
+    #ifdef LOW_PASS_FILTER
+        int _dac = dac_val;
+        dac_val = (dac_val + last_dac_val) / 2;
+        last_dac_val = _dac;
+    #endif
+
+    if((dac_val < DEAD_ZONE) && (dac_val > -DEAD_ZONE)) {
+        dac_write(4095);
+        PIN_low(PC4);
+        PIN_low(PA2);
+    } else {
+        if(dac_val > 0) {
+            PIN_low(PC4);
+            PIN_high(PA2);
+        } else {
+            PIN_low(PA2);
+            PIN_high(PC4);
+            dac_val = -dac_val;
+        }
+
+        dac_val *= 5; // (channel[3 -1] - 1000) * 4096 / 1000;
+        if(dac_val < 0) {
+            dac_val = 0;
+        } else if(dac_val > 4095) {
+            dac_val = 4095;
+        }
+        dac_write(4095-dac_val);
+
+
+    }
+
+}
+
+#endif
+
 int main(void)
 {
     // PIN_output(PC1);
@@ -140,6 +225,11 @@ int main(void)
     #endif
 
     // DEBUG_println("Start");
+
+    // uint32_t next_tick = STK->CNT + 1000 * DLY_MS_TIME;
+
+//   while(((int32_t)(STK->CNT - end)) < 0);
+
 
     while(1)
     {
@@ -158,6 +248,15 @@ int main(void)
                 rxFoo();
             }
         }
+
+        // if(((int32_t)(STK->CNT - next_tick)) < 0) {
+        //     next_tick += 1000 * DLY_MS_TIME;
+        // //     // dac_write(0);
+
+        //     PIN_toggle(PC4);
+        // //     // PIN_high(PC4);
+
+        // }
 
     #if 0
         counter++;
