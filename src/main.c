@@ -12,7 +12,7 @@
 // 2 - Керування лівим бортом по каналах 1 та 2  (1+2)
 // 3 - Керування правим бортом по каналах 1 та 2 (2-1)
 
-#define DEVICE_MODE 2
+#define DEVICE_MODE 3
 
 //#define STARTKIT 1
 
@@ -43,7 +43,7 @@ static inline void init(void)
     UART_init();
     dac_init();
     #if DEVICE_MODE == 1
-    dac_write(3000);        // Підібрати напругу 12В
+    dac_write(2730);        // TODO: Підібрати напругу 12В
     #else
     dac_write(4095);
     #endif
