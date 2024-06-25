@@ -149,34 +149,20 @@ static void rxFoo()
     }
 }
 
-#define LOW_PASS_FILTER
-
 #elif (DEVICE_MODE == 2) || (DEVICE_MODE == 3) 
 
-static void rxFoo()
+#define LOW_PASS_FILTER
+// CRSF center value is 992
+#define CENTER_X 992
+#define CENTER_Y 992
+#define MAX_X 820
+#define MAX_Y 820
+#define DEAD_ZONE 10
+
+static void rxTo(int dac_val)
 {
-    // bool in_dead_zone = false;
-
     #ifdef LOW_PASS_FILTER
-    static int last_dac_val = 0;
-    #endif
-
-    // CRSF center value is 992
-    #define CENTER_X 992
-    #define CENTER_Y 992
-    #define MAX_X 820
-    #define MAX_Y 820
-    #define DEAD_ZONE 10
-
-    int X = channel[1 -1] - CENTER_X;   // -MAX_X to MAX_X
-    int Y = channel[2 -1] - CENTER_Y;   // -MAX_Y to MAX_Y
-
-    #if (DEVICE_MODE == 2)
-        int dac_val = (X+Y);
-    #else
-        int dac_val = (Y-X);
-    #endif
-    #ifdef LOW_PASS_FILTER
+        static int last_dac_val = 0;
         int _dac = dac_val;
         dac_val = (dac_val + last_dac_val) / 2;
         last_dac_val = _dac;
@@ -203,10 +189,22 @@ static void rxFoo()
             dac_val = 4095;
         }
         dac_write(4095-dac_val);
-
-
     }
+}
 
+static void rxFoo()
+{
+    // bool in_dead_zone = false;
+
+    int X = channel[1 -1] - CENTER_X;   // -MAX_X to MAX_X
+    int Y = channel[2 -1] - CENTER_Y;   // -MAX_Y to MAX_Y
+
+    #if (DEVICE_MODE == 2)
+        int dac_val = (X+Y);
+    #else
+        int dac_val = (Y-X);
+    #endif
+    rxTo(dac_val);
 }
 
 #endif
@@ -226,7 +224,9 @@ int main(void)
 
     // DEBUG_println("Start");
 
-    // uint32_t next_tick = STK->CNT + 1000 * DLY_MS_TIME;
+    #define RX_TIMEOUT  500 * DLY_MS_TIME
+
+    uint32_t next_tick = STK->CNT + RX_TIMEOUT;
 
 //   while(((int32_t)(STK->CNT - end)) < 0);
 
@@ -246,17 +246,20 @@ int main(void)
             if(crsf_frame_ready) {
                 crsf_frame_ready = false;
                 rxFoo();
+                next_tick = STK->CNT + RX_TIMEOUT;
             }
         }
 
-        // if(((int32_t)(STK->CNT - next_tick)) < 0) {
-        //     next_tick += 1000 * DLY_MS_TIME;
+        if(((int32_t)(STK->CNT - next_tick)) > 0) {
+            next_tick = STK->CNT + RX_TIMEOUT;
+            rxTo(0);
+            // next_tick += 1000 * DLY_MS_TIME;
         // //     // dac_write(0);
 
         //     PIN_toggle(PC4);
         // //     // PIN_high(PC4);
 
-        // }
+        }
 
     #if 0
         counter++;
