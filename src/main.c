@@ -14,6 +14,9 @@
 
 #define DEVICE_MODE 3
 
+// Керування тільки аналоговим виходом з нулем у середині діапазону
+#define DEVICE_ANALOG_ONLY 1
+
 //#define STARTKIT 1
 
 #if defined(STARTKIT)
@@ -42,10 +45,15 @@ static inline void init(void)
     // SYS_init();
     UART_init();
     dac_init();
+
     #if DEVICE_MODE == 1
-    dac_write(2730);        // TODO: Підібрати напругу 12В
+        dac_write(2730);        // TODO: Підібрати напругу 12В
     #else
-    dac_write(4095);
+        #if defined(DEVICE_ANALOG_ONLY) && (DEVICE_ANALOG_ONLY == 1)
+            dac_write(2047);    // За замовчуванням напруга 1/2
+        #else
+            dac_write(4095);
+        #endif
     #endif
 
 #if 0
@@ -169,26 +177,43 @@ static void rxTo(int dac_val)
     #endif
 
     if((dac_val < DEAD_ZONE) && (dac_val > -DEAD_ZONE)) {
-        dac_write(4095);
-        PIN_low(PC4);
-        PIN_low(PA2);
-    } else {
-        if(dac_val > 0) {
+        #if defined(DEVICE_ANALOG_ONLY) && (DEVICE_ANALOG_ONLY == 1)
+            dac_write(2047);
+        #else
+            dac_write(4095);
             PIN_low(PC4);
-            PIN_high(PA2);
-        } else {
             PIN_low(PA2);
-            PIN_high(PC4);
-            dac_val = -dac_val;
-        }
+        #endif
+    } else {
+        #if defined(DEVICE_ANALOG_ONLY) && (DEVICE_ANALOG_ONLY == 1)
+            dac_val *= 5; // (channel[3 -1] - 1000) * 4096 / 1000;
+            dac_val += 2048;
+            if(dac_val < 0) {
+                dac_val = 0;
+            } else if(dac_val > 4095) {
+                dac_val = 4095;
+            }
+            dac_write(dac_val);
+        #else
+            if(dac_val > 0) {
+                PIN_low(PC4);
+                PIN_high(PA2);
+            } else {
+                PIN_low(PA2);
+                PIN_high(PC4);
+                dac_val = -dac_val;
+            }
 
-        dac_val *= 5; // (channel[3 -1] - 1000) * 4096 / 1000;
-        if(dac_val < 0) {
-            dac_val = 0;
-        } else if(dac_val > 4095) {
-            dac_val = 4095;
-        }
-        dac_write(4095-dac_val);
+            dac_val *= 5; // (channel[3 -1] - 1000) * 4096 / 1000;
+            if(dac_val < 0) {
+                dac_val = 0;
+            } else if(dac_val > 4095) {
+                dac_val = 4095;
+            }
+            dac_write(4095-dac_val);
+
+        #endif
+
     }
 }
 
@@ -214,7 +239,9 @@ int main(void)
     // PIN_output(PC1);
 
     PIN_output(PC4);    // Right
+    PIN_low(PC4);
     PIN_output(PA2);    // Left
+    PIN_low(PA2);
 
     init();
 
