@@ -2041,6 +2041,27 @@
 		)
 		(uuid 74bf42e5-49c2-4a2a-bf4b-71d67c56e6e7)
 	)
+	(text "3. PA2, T1CH2N, \n7. PC4, T1CH4, T1CH1CH2N\n\n5. PC1, T2CH4\n6. PC2, T2CH2"
+		(exclude_from_sim no)
+		(at 82.804 156.464 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9c6d541d-94f8-4fbd-adc0-9d6cc3ac1367")
+	)
+	(text "Альтернативні функції виводів контролера CH32V003J4M6"
+		(exclude_from_sim no)
+		(at 112.014 147.066 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "a99552e5-7eac-47d0-a282-e43503788260")
+	)
 	(text "Встановлюється роз'єм на два піни у середні отвори.\nЧотирьохпіний роз'єм використовується у випадках,\nколи треба двосторонньє спілкування або перепрошивка."
 		(exclude_from_sim no)
 		(at 48.26 118.618 0)
@@ -2919,7 +2940,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:Fiducial")
-		(at 50.8 172.72 0)
+		(at 17.78 177.8 0)
 		(unit 1)
 		(exclude_from_sim yes)
 		(in_bom no)
@@ -2928,7 +2949,7 @@
 		(fields_autoplaced yes)
 		(uuid "8bb43524-4c74-40a5-9c46-b71f43a3f393")
 		(property "Reference" "FID1"
-			(at 53.34 171.4499 0)
+			(at 20.32 176.5299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2937,7 +2958,7 @@
 			)
 		)
 		(property "Value" "Fiducial"
-			(at 53.34 173.9899 0)
+			(at 20.32 179.0699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2946,7 +2967,7 @@
 			)
 		)
 		(property "Footprint" "Fiducial:Fiducial_1mm_Mask2mm"
-			(at 50.8 172.72 0)
+			(at 17.78 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2955,7 +2976,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 50.8 172.72 0)
+			(at 17.78 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2964,7 +2985,7 @@
 			)
 		)
 		(property "Description" "Fiducial Marker"
-			(at 50.8 172.72 0)
+			(at 17.78 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3811,7 +3832,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:Fiducial")
-		(at 69.85 172.72 0)
+		(at 36.83 177.8 0)
 		(unit 1)
 		(exclude_from_sim yes)
 		(in_bom no)
@@ -3820,7 +3841,7 @@
 		(fields_autoplaced yes)
 		(uuid "f279d2ba-ac36-4a7c-b2b4-54943bc40716")
 		(property "Reference" "FID2"
-			(at 72.39 171.4499 0)
+			(at 39.37 176.5299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3829,7 +3850,7 @@
 			)
 		)
 		(property "Value" "Fiducial"
-			(at 72.39 173.9899 0)
+			(at 39.37 179.0699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3838,7 +3859,7 @@
 			)
 		)
 		(property "Footprint" "Fiducial:Fiducial_1mm_Mask2mm"
-			(at 69.85 172.72 0)
+			(at 36.83 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3847,7 +3868,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 69.85 172.72 0)
+			(at 36.83 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3856,7 +3877,7 @@
 			)
 		)
 		(property "Description" "Fiducial Marker"
-			(at 69.85 172.72 0)
+			(at 36.83 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
