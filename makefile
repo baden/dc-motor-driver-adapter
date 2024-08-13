@@ -48,9 +48,17 @@ help:
 	@echo "make flash     compile and upload to MCU"
 	@echo "make clean     remove all build files"
 
-$(TARGET).elf: $(CFILES)
+$(TARGET)-L.elf: $(CFILES)
 	@echo "Building $(TARGET).elf ..."
-	@$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+	@$(CC) -o $@ $^ $(CFLAGS) -DDEVICE_MODE=2 $(LDFLAGS)
+
+$(TARGET)-R.elf: $(CFILES)
+	@echo "Building $(TARGET).elf ..."
+	@$(CC) -o $@ $^ $(CFLAGS) -DDEVICE_MODE=3 $(LDFLAGS)
+
+$(TARGET)-UD.elf: $(CFILES)
+	@echo "Building $(TARGET).elf ..."
+	@$(CC) -o $@ $^ $(CFLAGS) -DDEVICE_MODE=1 $(LDFLAGS)
 
 $(TARGET).lst: $(TARGET).elf
 	@echo "Building $(TARGET).lst ..."
@@ -64,21 +72,30 @@ $(TARGET).bin: $(TARGET).elf
 	@echo "Building $(TARGET).bin ..."
 	@$(OBJCOPY) -O binary $< $(TARGET).bin
 
-$(TARGET).hex: $(TARGET).elf
+$(TARGET)-L.hex: $(TARGET)-L.elf
 	@echo "Building $(TARGET).hex ..."
-	@$(OBJCOPY) -O ihex $< $(TARGET).hex
+	@$(OBJCOPY) -O ihex $< $(TARGET)-L.hex
+
+$(TARGET)-R.hex: $(TARGET)-R.elf
+	@echo "Building $(TARGET).hex ..."
+	@$(OBJCOPY) -O ihex $< $(TARGET)-R.hex
+
+$(TARGET)-UD.hex: $(TARGET)-UD.elf
+	@echo "Building $(TARGET).hex ..."
+	@$(OBJCOPY) -O ihex $< $(TARGET)-UD.hex
 
 $(TARGET).asm: $(TARGET).elf
 	@echo "Disassembling to $(TARGET).asm ..."
 	@$(OBJDUMP) -d $(TARGET).elf > $(TARGET).asm
 
-all:	$(TARGET).lst $(TARGET).map $(TARGET).bin $(TARGET).hex $(TARGET).asm size
+#all:	$(TARGET).lst $(TARGET).map $(TARGET).bin $(TARGET)-L.hex $(TARGET)-R.hex $(TARGET)-UD.hex $(TARGET).asm size
+all:	$(TARGET)-L.hex $(TARGET)-R.hex $(TARGET)-UD.hex size
 
 elf:	$(TARGET).elf removetemp size
 
 bin:	$(TARGET).bin removetemp size removeelf
 
-hex:	$(TARGET).hex removetemp size removeelf
+hex:	$(TARGET)-R.hex $(TARGET)-L.hex $(TARGET)-UD.hex removetemp size removeelf
 
 asm:	$(TARGET).asm removetemp size removeelf
 

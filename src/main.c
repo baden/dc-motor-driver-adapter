@@ -12,7 +12,10 @@
 // 2 - Керування лівим бортом по каналах 1 та 2  (1+2)
 // 3 - Керування правим бортом по каналах 1 та 2 (2-1)
 
-#define DEVICE_MODE 3
+#if !defined(DEVICE_MODE)
+    #error "DEVICE_MODE is not defined"
+#endif
+// #define DEVICE_MODE 3
 
 // Керування тільки аналоговим виходом з нулем у середині діапазону
 #define DEVICE_ANALOG_ONLY 1
@@ -128,14 +131,8 @@ void EXTI7_0_IRQHandler( void )
 
 #if DEVICE_MODE == 1
 
-static void rxFoo()
+static void rxTo(int val)
 {
-    int val = channel[12 -1];
-
-    // Middle = 1044
-    // Low = 191
-    // High = 1792
-
     if(val < 500) {
         #if defined(STARTKIT)
             PIN_low(PIN_LED);
@@ -155,6 +152,16 @@ static void rxFoo()
         PIN_low(PC4);
         PIN_low(PA2);
     }
+}
+
+static void rxFoo()
+{
+    int val = channel[12 -1];
+
+    // Middle = 1044
+    // Low = 191
+    // High = 1792
+    rxTo(val);
 }
 
 #elif (DEVICE_MODE == 2) || (DEVICE_MODE == 3) 
@@ -279,7 +286,12 @@ int main(void)
 
         if(((int32_t)(STK->CNT - next_tick)) > 0) {
             next_tick = STK->CNT + RX_TIMEOUT;
-            rxTo(0);
+
+            #if DEVICE_MODE == 1
+                rxTo(1000);
+            #else
+                rxTo(0);
+            #endif
             // next_tick += 1000 * DLY_MS_TIME;
         // //     // dac_write(0);
 
